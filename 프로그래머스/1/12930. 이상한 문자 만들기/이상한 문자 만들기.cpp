@@ -3,7 +3,7 @@
 
 using namespace std;
 
-string solution(string s) {
+string solution(string s) { 
     int j = 0;
     string answer = "";
     
