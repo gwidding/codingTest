@@ -19,7 +19,6 @@ int solution(int n, int a, int b)
             a -= n;
             b -= n;
         }
-            
         answer--;
     }
     
