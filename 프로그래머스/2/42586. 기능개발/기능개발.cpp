@@ -10,25 +10,18 @@ vector<int> solution(vector<int> progresses, vector<int> speeds) {
     vector<int> answer;
     queue<int> days;
     
-    for (int i = 0; i < progresses.size(); i++) {        
-        days.push(ceil((100 - progresses[i]) / (float) speeds[i]));
-    }
-    
     int today = 1;
-    while (!days.empty()) {
-        int cnt = 0;
 
-        if (days.front() > 0)
-            today = days.front();
+    for (int i = 0; i < progresses.size(); i++) {
+        int need = ceil((100 - progresses[i]) / (float)speeds[i]);
+
+        if (answer.empty() || need > today)
+            answer.push_back(1);
+        else
+            answer.back()++;
         
-        while (!days.empty() && days.front() <= today) {
-            cnt++;
-            days.pop();
-        }
-        
-        if (cnt > 0) 
-            answer.push_back(cnt);
+         if (today < need)
+            today = need;
     }
-    
     return answer;
 }
