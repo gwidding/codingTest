@@ -1,14 +1,11 @@
 #include <string>
 #include <vector>
 #include <cmath>
-#include <queue>
-#include <iostream>
 
 using namespace std;
 
 vector<int> solution(vector<int> progresses, vector<int> speeds) {
     vector<int> answer;
-    queue<int> days;
     
     int today = 1;
 
