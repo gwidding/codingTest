@@ -7,11 +7,13 @@ vector<int> solution(int n, long long left, long long right) {
     vector<int> answer;
     
     for (long long i = left; i <= right; i++) {
-        long long r = i / n;
-        if (i >= r * n && i < r * (n+1))
-            answer. push_back(r + 1);
+        long long row = i / n;
+        long long col = i % n;
+        if (col < row)
+            answer.push_back(row + 1);
         else
-            answer.push_back(i + 1 - r*n);
+            answer.push_back(col + 1);
     }
+    
     return answer;
 }
