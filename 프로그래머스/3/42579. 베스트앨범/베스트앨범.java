@@ -1,65 +1,49 @@
 import java.util.*;
 
-// 장르 -> 재생 수 -> 고유번호 낮은
 class Song {
     int songNum;
-    int priorGenre;
-    int cnt;
-    Song(int songNum, int priorGenre, int cnt) {
+    int playCount;
+
+    Song(int songNum, int playCount) {
         this.songNum = songNum;
-        this.priorGenre = priorGenre;
-        this.cnt = cnt;
+        this.playCount = playCount;
     }
 }
 
-
 class Solution {
     public int[] solution(String[] genres, int[] plays) {
-        PriorityQueue<Song> pq = new PriorityQueue<>(
-            (a, b) -> {
-                if (b.priorGenre != a.priorGenre) {
-                    return Integer.compare(a.priorGenre, b.priorGenre);
-                }
-                else {
-                    return Integer.compare(b.cnt, a.cnt);
-                }
-            }
-        );
-        
-        Map<String, Integer> genMap = new HashMap<>();
-        // 1. 장르 순위
+        // 장르별 재생 수
+        Map<String, Integer> genreTotal = new HashMap<>();
         for (int i = 0; i < genres.length; i++) {
-            genMap.put(genres[i], genMap.getOrDefault(genres[i], 0) + plays[i]);
+            genreTotal.put(genres[i], genreTotal.getOrDefault(genres[i], 0) + plays[i]);
         }
-        
-        // 정렬
-        List<Map.Entry<String, Integer>> genList = new ArrayList<>(genMap.entrySet());
-        genList.sort(Map.Entry.<String, Integer>comparingByValue().reversed());
-        // 장르 순위를 map에 저장
-        Map<String, Integer> genRank = new HashMap<>();
-        int rank = 1;
-        for (Map.Entry<String, Integer> entry : genList) {
-            genRank.put(entry.getKey(), rank);
-            rank++;
+
+        // 장르별 곡
+        Map<String, List<Song>> genreToSongs = new HashMap<>();
+        for (int i = 0; i < genres.length; i++) {
+            genreToSongs.computeIfAbsent(genres[i], k -> new ArrayList<>())
+                        .add(new Song(i, plays[i]));
         }
-        for (String key : genRank.keySet()) {
-            System.out.println(key + "->" + genRank.get(key) + "위");
-        }
-        
-        for (int i = 0; i < plays.length; i++) {
-          pq.add(new Song(i, genRank.get(genres[i]), plays[i]));
-        }
-        Map<String, Integer> genreCount = new HashMap<>();
+
+        // 장르 순서 (재생 수 내림차)
+        List<String> sortedGenres = new ArrayList<>(genreTotal.keySet());
+        sortedGenres.sort((a, b) -> genreTotal.get(b) - genreTotal.get(a));
+
+        // 장르에서 2곡씩 선택 (재생 수 내림차, 고유번호 오름차)
         List<Integer> result = new ArrayList<>();
-        while (!pq.isEmpty()) {
-            Song s = pq.poll();
-            String genre = genres[s.songNum];
-            genreCount.put(genre, genreCount.getOrDefault(genre, 0) + 1);
-            if (genreCount.get(genre) <= 2) {
-                result.add(s.songNum);
+        for (String genre : sortedGenres) {
+            List<Song> songs = genreToSongs.get(genre);
+            songs.sort((a, b) -> {
+                if (b.playCount != a.playCount) {
+                    return b.playCount - a.playCount;
+                }
+                return a.songNum - b.songNum;
+            });
+
+            for (int i = 0; i < Math.min(2, songs.size()); i++) {
+                result.add(songs.get(i).songNum);
             }
         }
-        System.out.println(result);
 
         return result.stream().mapToInt(i -> i).toArray();
     }
