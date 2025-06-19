@@ -3,7 +3,6 @@ import java.util.ArrayList;
 
 class Solution {
     public String solution(int[] numbers) {
-        String answer = "";
         List<String> list = new ArrayList<>();
         
         for (int n : numbers) {
@@ -13,9 +12,10 @@ class Solution {
         
         if ("0".equals(list.get(0)))
             return "0";
+        StringBuilder sb = new StringBuilder();
         for (String s : list)
-            answer += s;
+            sb.append(s);
         
-        return answer;
+        return sb.toString();
     }
 }
