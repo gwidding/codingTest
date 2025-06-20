@@ -1,31 +1,56 @@
 import java.util.*;
 
 class Solution {
+    class Truck {
+        int weight;
+        int position;
+        
+        public Truck(int weight) {
+            this.weight = weight;
+            this.position = 1;
+        }
+        
+        int moving() {
+            return this.position++;
+        }
+    }
+    
     public int solution(int bridge_length, int weight, int[] truck_weights) {
-        int answer = 0, totalWeight = 0;
-        Queue<Integer> bridge = new LinkedList<>();
+        int answer = 0;
+        int curWeight = 0;
+        Queue<Truck> waitQ = new LinkedList<>();
+        Queue<Truck> bridgeQ = new LinkedList<>();
         
-        for (int i = 0; i < bridge_length; i++) {
-            bridge.offer(0);
-        }
+        for (int t : truck_weights)
+            waitQ.offer(new Truck(t));
         
-        int j = 0;
-        while (j < truck_weights.length) {
+        while (!waitQ.isEmpty() || !bridgeQ.isEmpty()) {
             answer++;
-            
-            totalWeight -= bridge.poll();
-            
-            if (totalWeight + truck_weights[j] <= weight) {
-                bridge.offer(truck_weights[j]);
-                totalWeight += truck_weights[j];
-                j++;
+            if (bridgeQ.isEmpty()) {
+                Truck t = waitQ.poll();
+                bridgeQ.offer(t);
+                curWeight += t.weight;
+                continue;
             }
-            else {
-                bridge.offer(0);
+            
+            for (Truck t : bridgeQ) {
+                t.moving();
+            }
+            
+            if (bridgeQ.peek().position > bridge_length) {
+                Truck t = bridgeQ.poll();
+                curWeight -= t.weight;
+            }
+            
+            if (!waitQ.isEmpty() &&
+                curWeight + waitQ.peek().weight <= weight) {
+                Truck t = waitQ.poll();
+                bridgeQ.offer(t);
+                curWeight += t.weight;
             }
             
         }
         
-        return answer + bridge_length;
+        return answer;
     }
 }
